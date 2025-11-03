@@ -65,6 +65,8 @@ async function generateVideo() {
 
   // Full ffmpeg command
   // -r 10 = 10fps = each image shown for 100ms
+  // -crf 18 = visually lossless quality (lower = better, range 0-51)
+  // -preset slow = better compression efficiency (slower encoding)
   // Using concat demuxer to ensure correct order
   const command = `ffmpeg -y \
     -f concat \
@@ -72,8 +74,8 @@ async function generateVideo() {
     -r 10 \
     -i "${concatFile}" \
     -c:v libx264 \
-    -preset medium \
-    -crf 23 \
+    -preset slow \
+    -crf 18 \
     -pix_fmt yuv420p \
     "${videoOutput}"`;
 
