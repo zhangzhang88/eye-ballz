@@ -1,4 +1,13 @@
-import { FPS, PREFIX, X_STEPS, Y_STEPS, steps } from './constants.js';
+import { FPS, generateSteps } from './constants.js';
+
+
+const { PREFIX, Y_STEPS, X_STEPS, steps } = generateSteps({
+  X_STEPS: 25,
+  Y_STEPS: 25,
+  PREFIX: 'wes-big',
+});
+
+console.log(steps, PREFIX, Y_STEPS, X_STEPS);
 
 // Create a grid container
 const preview = document.querySelector('.preview') as HTMLDivElement;
@@ -34,6 +43,7 @@ video.addEventListener('loadedmetadata', () => {
 // Generate the grid of images
 for (const row of steps) {
   for (const step of row) {
+
     const img = document.createElement('img');
     img.src = `./outputs/${PREFIX}/${step.filename}`;
     img.alt = `Position ${step.x}, ${step.y}`;
@@ -104,7 +114,7 @@ document.addEventListener('mousemove', (e) => {
     const yIndex = Math.round(((normalizedY + 1) / 2) * (Y_STEPS - 1));
 
     // Update the image source - access nested array [row][col]
-    // img.src = `./outputs/${PREFIX}/${steps[yIndex][xIndex].filename}`;
+    img.src = `./outputs/${PREFIX}/${steps[yIndex][xIndex].filename}`;
   });
 });
 

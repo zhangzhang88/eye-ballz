@@ -5,11 +5,17 @@ import {
   pipeline,
   env,
 } from "@huggingface/transformers";
-import { PREFIX, Step, steps } from './constants.js';
+import { Step, generateSteps } from './constants.js';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { existsSync, mkdir, mkdirSync } from 'node:fs';
 import pAll from 'p-all';
+
+const {steps, PREFIX, X_STEPS, Y_STEPS} = generateSteps({
+  X_STEPS: 25,
+  Y_STEPS: 25,
+  PREFIX: 'wes-big',
+});
 
 const depthEstimator = await pipeline(
   "depth-estimation",
@@ -26,7 +32,7 @@ async function estimateDepth(step: Step) {
     console.log(`Depth for ${step.filename} already exists, skipping...`);
     return;
   }
-  // make the path if it doesnt exist
+  // make the path if it doesn't exist
   if (!existsSync(depthDir)) {
      mkdirSync(depthDir);
   }
