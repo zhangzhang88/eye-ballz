@@ -2,9 +2,9 @@ import { FPS, generateSteps } from './constants.js';
 
 
 const { PREFIX, Y_STEPS, X_STEPS, steps } = generateSteps({
-  X_STEPS: 25,
-  Y_STEPS: 25,
-  PREFIX: 'wes-big',
+  X_STEPS: 10,
+  Y_STEPS: 10,
+  PREFIX: 'wes-avatar',
 });
 
 console.log(steps, PREFIX, Y_STEPS, X_STEPS);

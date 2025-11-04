@@ -1,20 +1,17 @@
 import {
-  DepthEstimationPipeline,
   DepthEstimationPipelineOutput,
-  RawImage,
   pipeline,
-  env,
 } from "@huggingface/transformers";
 import { Step, generateSteps } from './constants.js';
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { existsSync, mkdir, mkdirSync } from 'node:fs';
+import { existsSync, mkdirSync } from 'node:fs';
 import pAll from 'p-all';
 
 const {steps, PREFIX, X_STEPS, Y_STEPS} = generateSteps({
-  X_STEPS: 25,
-  Y_STEPS: 25,
-  PREFIX: 'wes-big',
+  X_STEPS: 10,
+  Y_STEPS: 10,
+  PREFIX: 'wes-avatar',
 });
 
 const depthEstimator = await pipeline(

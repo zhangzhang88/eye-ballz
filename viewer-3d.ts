@@ -1,4 +1,4 @@
-import { FPS, PREFIX, X_STEPS, Y_STEPS, steps } from './constants.js';
+import { FPS, PREFIX, X_STEPS, Y_STEPS, generateSteps } from './constants.js';
 import {
   Scene,
   PerspectiveCamera,
@@ -14,7 +14,13 @@ import {
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
+
 const DEFAULT_DISPLACEMENT_SCALE = 0.5;
+const {steps, PREFIX, X_STEPS, Y_STEPS} = generateSteps({
+  X_STEPS: 10,
+  Y_STEPS: 10,
+  PREFIX: 'wes-avatar',
+});
 
 // Create container for 3D viewer
 const viewerContainer = document.createElement('div');

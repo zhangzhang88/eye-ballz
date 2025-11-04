@@ -12,9 +12,9 @@ import {
 import pAll from 'p-all';
 
 const {steps, PREFIX, X_STEPS, Y_STEPS} = generateSteps({
-  X_STEPS: 25,
-  Y_STEPS: 25,
-  PREFIX: 'wes-big',
+  X_STEPS: 10,
+  Y_STEPS: 10,
+  PREFIX: 'snickers',
 });
 
 const execAsync = promisify(exec);
@@ -26,7 +26,7 @@ const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
 });
 
-const image = fs.readFileSync("scott-wes.png");
+const image = fs.readFileSync("photos/snickers.jpg");
 
 async function generate(step: Step) {
   const outputDir = path.join(__dirname, "outputs", PREFIX);
