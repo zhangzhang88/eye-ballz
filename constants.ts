@@ -2,7 +2,7 @@ export const X_STEPS = 15;
 export const Y_STEPS = 15;
 export const ROTATE_BOUND = 20;
 export const PUPIL_BOUND = 15;
-export const PREFIX = "photo-1762837379010";
+export const PREFIX = "photo-1762842842525";
 // export const PREFIX = "output";
 export const FPS = 60;
 

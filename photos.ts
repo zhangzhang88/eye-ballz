@@ -1,9 +1,9 @@
 // this is just a list of generated items so I can reference them
 
 export const photos = {
-  'photo-1762837379010': {
-    filename: 'photos/photo.jpg',
-    PREFIX: 'photo-1762837379010',
+  'photo-1762842842525': {
+    filename: 'photos/photo.png',
+    PREFIX: 'photo-1762842842525',
     X_STEPS: 15,
     Y_STEPS: 15,
   },
