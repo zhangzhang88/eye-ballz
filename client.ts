@@ -93,20 +93,9 @@ function loadPhoto(photo: Photo) {
   preview.style.setProperty('--x-steps', X_STEPS.toString());
   preview.style.setProperty('--y-steps', Y_STEPS.toString());
 
-  // Clear existing images
+  // 不再显示图片网格,只保留视频
   preview.innerHTML = '';
   images.length = 0;
-
-  // Generate the grid of images
-  for (const row of steps) {
-    for (const step of row) {
-      const img = document.createElement('img');
-      img.src = `./outputs/${PREFIX}/${step.filename}`;
-      img.alt = `Position ${step.x}, ${step.y}`;
-      preview.appendChild(img);
-      images.push(img);
-    }
-  }
 
   // Reinitialize video
   initializeVideoContainer();
@@ -151,30 +140,7 @@ function handlePointerMove(e: MouseEvent) {
     video.currentTime = frameTime;
   }
 
-  // Update all images
-  images.forEach((img) => {
-    // Get the image's bounding box
-    const rect = img.getBoundingClientRect();
-    const imgCenterX = rect.left + rect.width / 2;
-    const imgCenterY = rect.top + rect.height / 2;
-
-    // Calculate the direction from image center to mouse
-    const deltaX = e.clientX - imgCenterX;
-    const deltaY = e.clientY - imgCenterY;
-
-    // Normalize to -1 to 1 range based on distance
-    const maxDistance = 500;
-    const normalizedX = Math.max(-1, Math.min(1, deltaX / maxDistance));
-    const normalizedY = Math.max(-1, Math.min(1, deltaY / maxDistance));
-
-    // Map normalized values to our step indices (0 to X_STEPS-1 / Y_STEPS-1)
-    // -1 maps to 0, 0 maps to middle, 1 maps to max
-    const xIndex = Math.round(((normalizedX + 1) / 2) * (X_STEPS - 1));
-    const yIndex = Math.round(((normalizedY + 1) / 2) * (Y_STEPS - 1));
-
-    // Update the image source - access nested array [row][col]
-    img.src = `./outputs/${PREFIX}/${steps[yIndex][xIndex].filename}`;
-  });
+  // 不再更新图片网格
 }
 
 // Initialize app
@@ -194,4 +160,3 @@ function init() {
 
 // Start the app
 init();
-

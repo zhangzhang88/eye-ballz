@@ -131,33 +131,58 @@ async function preloadTextures() {
   console.log('All textures loaded!');
 }
 
-// Delete photo function
-function deletePhoto(photoKey: string, photoButton: HTMLElement) {
+// Delete photo function - now calls backend API
+async function deletePhoto(photoKey: string, photoButton: HTMLElement) {
   // Confirm deletion
   if (!confirm(`确定要删除照片 "${photoKey}" 吗？此操作无法撤销。`)) {
     return;
   }
 
-  // Remove from photos object (in a real app, this would also remove from server)
-  delete (photos as any)[photoKey];
-  
-  // Remove the button from UI
-  photoButton.remove();
-  
-  // If this was the currently active photo, load the first remaining photo
-  const remainingPhotos = Object.values(photos);
-  if (remainingPhotos.length > 0 && currentPhoto && currentPhoto.PREFIX === photoKey) {
-    const firstPhoto = remainingPhotos[0];
-    loadPhoto(firstPhoto).then(() => {
+  try {
+    console.log('🗑️ 开始删除照片:', photoKey);
+    
+    // Call backend API to delete photo
+    const response = await fetch(`http://localhost:3000/api/photo/${photoKey}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || '删除失败');
+    }
+
+    const result = await response.json();
+    console.log('✅ 删除成功:', result);
+
+    // Remove from photos object
+    delete (photos as any)[photoKey];
+    
+    // Remove the button from UI
+    photoButton.remove();
+    
+    // If this was the currently active photo, load the first remaining photo
+    const remainingPhotos = Object.values(photos);
+    if (remainingPhotos.length > 0 && currentPhoto && currentPhoto.PREFIX === photoKey) {
+      const firstPhoto = remainingPhotos[0];
+      await loadPhoto(firstPhoto);
+      
       // Set the first button as active
       const firstButton = document.querySelector('.photo-switcher-btn') as HTMLElement;
       if (firstButton) {
         firstButton.classList.add('active');
       }
-    });
+    }
+    
+    // Show success message
+    alert('照片已成功删除');
+    
+  } catch (error) {
+    console.error('❌ 删除错误:', error);
+    alert('删除失败: ' + (error as Error).message);
   }
-  
-  console.log(`Deleted photo: ${photoKey}`);
 }
 
 // Create photo switcher UI

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eyeballz - 上传头像生成视线跟随效果</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    .upload-area {
+      border: 3px dashed #667eea;
+      border-radius: 15px;
+      padding: 40px;
+      text-align: center;
+      background: #f8f9ff;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 30px;
+    }
+
+    .upload-area:hover {
+      border-color: #764ba2;
+      background: #f0f2ff;
+    }
+
+    .upload-area.dragover {
+      border-color: #764ba2;
+      background: #e8ebff;
+      transform: scale(1.02);
+    }
+
+    .upload-icon {
+      font-size: 64px;
+      margin-bottom: 10px;
+    }
+
+    .preview-container {
+      margin: 20px 0;
+      display: none;
+    }
+
+    .preview-container.active {
+      display: block;
+    }
+
+    .preview-image {
+      max-width: 200px;
+      max-height: 200px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      object-fit: cover;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    input[type="number"],
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    input[type="number"]:focus,
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .grid-settings {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .info-box {
+      background: #fff9e6;
+      border-left: 4px solid #ffa500;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .cost-estimate {
+      background: #e6f7ff;
+      border-left: 4px solid #1890ff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .generate-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .generate-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .generate-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .status.active {
+      display: block;
+    }
+
+    .status.info {
+      background: #e6f7ff;
+      color: #0050b3;
+    }
+
+    .status.success {
+      background: #f6ffed;
+      color: #389e0d;
+    }
+
+    .status.error {
+      background: #fff1f0;
+      color: #cf1322;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .step-info {
+      background: #f0f0f0;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>👀 Eyeballz</h1>
+    <p class="subtitle">上传头像,生成视线跟随鼠标的互动效果</p>
+
+    <div class="upload-area" id="uploadArea">
+      <div class="upload-icon">📸</div>
+      <p style="font-size: 18px; color: #333; margin-bottom: 10px;">点击或拖拽上传照片</p>
+      <p style="font-size: 14px; color: #666;">支持 JPG、PNG、WEBP 格式</p>
+      <p style="font-size: 12px; color: #999; margin-top: 10px;">建议使用清晰的正面人脸照片</p>
+    </div>
+
+    <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp">
+
+    <div class="preview-container" id="previewContainer">
+      <label>照片预览:</label>
+      <img id="previewImage" class="preview-image" alt="Preview">
+    </div>
+
+    <div class="info-box">
+      <strong>💡 设置说明:</strong><br>
+      • X步数: 网格列数,控制左右视线变化 (建议: 5-20)<br>
+      • Y步数: 网格行数,控制上下视线变化 (建议: 5-20)<br>
+      • 步数越多,网格越细密,效果越流畅,但生成成本越高
+    </div>
+
+    <form id="generateForm">
+      <div class="grid-settings">
+        <div class="form-group">
+          <label for="xSteps">X步数 (网格列数)</label>
+          <input type="number" id="xSteps" name="xSteps" min="1" max="30" value="10">
+          <div class="step-info">范围: 1-30, 默认: 10</div>
+        </div>
+        <div class="form-group">
+          <label for="ySteps">Y步数 (网格行数)</label>
+          <input type="number" id="ySteps" name="ySteps" min="1" max="30" value="10">
+          <div class="step-info">范围: 1-30, 默认: 10</div>
+        </div>
+      </div>
+
+      <div class="cost-estimate" id="costEstimate">
+        <strong>💰 费用估算:</strong><br>
+        生成图片数: <span id="totalImages">0</span> 张<br>
+        预计费用: $<span id="estimatedCost">0.00</span><br>
+        <small style="color: #888;">*按 $0.00098/张 计算</small>
+      </div>
+
+      <button type="submit" class="generate-btn" id="generateBtn" disabled>
+        开始生成
+      </button>
+    </form>
+
+    <div class="status" id="status"></div>
+  </div>
+
+  <script>
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const previewContainer = document.getElementById('previewContainer');
+    const previewImage = document.getElementById('previewImage');
+    const generateForm = document.getElementById('generateForm');
+    const generateBtn = document.getElementById('generateBtn');
+    const status = document.getElementById('status');
+    const xStepsInput = document.getElementById('xSteps');
+    const yStepsInput = document.getElementById('ySteps');
+    const totalImages = document.getElementById('totalImages');
+    const estimatedCost = document.getElementById('estimatedCost');
+    const costEstimate = document.getElementById('costEstimate');
+
+    let selectedFile = null;
+
+    // 费用计算函数
+    function calculateCost() {
+      const xSteps = parseInt(xStepsInput.value) || 10;
+      const ySteps = parseInt(yStepsInput.value) || 10;
+      const total = xSteps * ySteps;
+      const cost = total * 0.00098; // $0.00098 per image
+      
+      totalImages.textContent = total;
+      estimatedCost.textContent = cost.toFixed(4);
+    }
+
+    // 绑定输入事件
+    xStepsInput.addEventListener('input', calculateCost);
+    yStepsInput.addEventListener('input', calculateCost);
+
+    // 点击上传区域
+    uploadArea.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    // 文件选择
+    fileInput.addEventListener('change', (e) => {
+      handleFile(e.target.files[0]);
+    });
+
+    // 拖拽上传
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      handleFile(e.dataTransfer.files[0]);
+    });
+
+    // 处理文件
+    function handleFile(file) {
+      if (!file) return;
+
+      if (!file.type.match('image/(jpeg|png|webp)')) {
+        showStatus('请上传 JPG、PNG 或 WEBP 格式的图片', 'error');
+        return;
+      }
+
+      selectedFile = file;
+
+      // 显示预览
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImage.src = e.target.result;
+        previewContainer.classList.add('active');
+      };
+      reader.readAsDataURL(file);
+
+      generateBtn.disabled = false;
+      hideStatus();
+      costEstimate.style.display = 'block';
+    }
+
+    // 显示状态
+    function showStatus(message, type) {
+      status.textContent = message;
+      status.className = 'status active ' + type;
+    }
+
+    function hideStatus() {
+      status.className = 'status';
+    }
+
+    // 表单提交
+    generateForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!selectedFile) {
+        showStatus('请先上传照片', 'error');
+        return;
+      }
+
+      // 获取用户输入的X/Y步数
+      const finalXSteps = parseInt(xStepsInput.value) || 10;
+      const finalYSteps = parseInt(yStepsInput.value) || 10;
+
+      // 验证输入
+      if (finalXSteps < 1 || finalXSteps > 30) {
+        showStatus('X步数必须在1-30之间', 'error');
+        return;
+      }
+      if (finalYSteps < 1 || finalYSteps > 30) {
+        showStatus('Y步数必须在1-30之间', 'error');
+        return;
+      }
+
+      // 自动生成照片名称：photo-时间戳
+      const photoName = 'photo-' + Date.now();
+
+      showStatus('📝 正在准备配置文件...', 'info');
+      generateBtn.disabled = true;
+
+      // 创建配置信息
+      const config = {
+        photoName,
+        xSteps: finalXSteps,
+        ySteps: finalYSteps,
+        fileName: selectedFile.name
+      };
+
+      // 保存照片到 photos 目录
+      const formData = new FormData();
+      formData.append('photo', selectedFile);
+      formData.append('config', JSON.stringify(config));
+
+      try {
+        // 上传照片和配置
+        showStatus('📤 正在上传照片和配置...', 'info');
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error('上传失败');
+        }
+
+        const uploadResult = await uploadResponse.json();
+        console.log('上传成功:', uploadResult);
+
+        // 开始生成
+        showStatus(`🎨 正在生成 ${finalXSteps * finalYSteps} 张图像... 这可能需要几分钟,请耐心等待`, 'info');
+        
+        const generateResponse = await fetch('/api/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!generateResponse.ok) {
+          throw new Error('生成失败');
+        }
+
+        const generateResult = await generateResponse.json();
+        console.log('生成成功:', generateResult);
+
+        // 显示成功信息
+        showStatus('✅ 生成完成! 正在跳转到预览页面...', 'success');
+
+        // 等待2秒后自动跳转到 3D 预览页面
+        // 根据环境自动选择URL
+        const hostname = window.location.hostname;
+        const isProduction = hostname === 'eye.ztr8.uk' || hostname.includes('ngrok');
+        
+        const previewUrl = isProduction 
+          ? window.location.origin + '/viewer-3d.html'  // 使用当前域名
+          : 'http://localhost:6769/viewer-3d.html'; // 使用最新的端口
+        
+        setTimeout(() => {
+          window.location.href = previewUrl;
+        }, 2000);
+        
+      } catch (error) {
+        showStatus('❌ 发生错误: ' + error.message, 'error');
+        generateBtn.disabled = false;
+      }
+    });
+
+    // 初始化时计算默认费用
+    calculateCost();
+  </script>
+</body>
+</html>

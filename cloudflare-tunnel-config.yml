@@ -1,0 +1,19 @@
+# Cloudflare Tunnel 配置文件
+# 使用步骤:
+# 1. 运行: cloudflared tunnel create eyeballz
+# 2. 将下面的 <TUNNEL_ID> 替换为返回的 tunnel ID
+# 3. 将 <YOUR_USERNAME> 替换为你的 macOS 用户名 (world)
+# 4. 复制此文件到: ~/.cloudflared/config.yml
+
+tunnel: <TUNNEL_ID>
+credentials-file: /Users/<YOUR_USERNAME>/.cloudflared/<TUNNEL_ID>.json
+
+ingress:
+  # 上传界面 - eye.ztr8.uk 根路径
+  - hostname: eye.ztr8.uk
+    service: http://localhost:3000
+  
+  # 默认规则(必需)
+  - service: http_status:404
+
+# 说明: 预览服务(端口6767)也通过 localhost:3000 的静态文件服务访问

@@ -22,8 +22,8 @@
 
       .viewer-3d-container {
         position: relative;
-        width: 800px;
-        height: 800px;
+        width: 200px;
+        height: 200px;
       }
 
       .viewer-3d {
@@ -32,17 +32,55 @@
         height: 100%;
       }
 
-      .depth-control {
-        position: absolute;
-        bottom: 20px;
+      .controls-hint {
+        position: fixed;
+        top: 20px;
         left: 50%;
         transform: translateX(-50%);
-        width: 200px;
-        z-index: 10;
+        background: rgba(255, 255, 255, 0.9);
+        color: #333;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 14px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        animation: fadeIn 0.5s ease-in;
+        text-align: center;
+        line-height: 1.6;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+      }
+
+      .controls-hint.fade-out {
+        animation: fadeOut 0.5s ease-out forwards;
+      }
+
+      @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+      }
+
+      .controls-hint strong {
+        color: #667eea;
       }
     </style>
   </head>
   <body>
+    <div class="controls-hint" id="controlsHint">
+      💡 <strong>提示:</strong> 移动鼠标查看眼睛跟随效果<br>
+      🖱️ 拖拽鼠标旋转视图 | 滚动滚轮缩放
+    </div>
     <script type="module" src="./viewer-3d.ts"></script>
+    <script>
+      // 10秒后淡出提示
+      setTimeout(() => {
+        const hint = document.getElementById('controlsHint');
+        hint.classList.add('fade-out');
+        setTimeout(() => hint.remove(), 500);
+      }, 10000);
+    </script>
   </body>
 </html>

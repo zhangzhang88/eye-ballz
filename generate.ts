@@ -12,7 +12,12 @@ import {
 import pAll from 'p-all';
 import { photos } from './photos.ts';
 
-const activePhoto = photos.weshandsome;
+const activePhoto = {
+  filename: 'photos/photo.jpg',
+  PREFIX: 'photo-1762837379010',
+  X_STEPS: 15,
+  Y_STEPS: 15
+};
 
 const {steps, PREFIX, X_STEPS, Y_STEPS} = generateSteps({
   X_STEPS: activePhoto.X_STEPS,
@@ -53,8 +58,55 @@ async function generate(step: Step) {
       image,
       ...step,
     },
-  });
-  await writeFile(outputPath, output as Buffer);
+  }) as any;
+  
+  console.log(`Output type for ${step.filename}:`, typeof output, Array.isArray(output) ? 'Array' : '');
+  console.log(`Output content:`, JSON.stringify(output, null, 2));
+  
+  // Replicate returns a URL string or FileOutput object
+  let imageUrl: string;
+  
+  if (typeof output === 'string') {
+    // Direct URL string
+    imageUrl = output;
+  } else if (Array.isArray(output) && output.length > 0) {
+    // Array with FileOutput objects
+    const firstItem = output[0];
+    if (typeof firstItem === 'string') {
+      imageUrl = firstItem;
+    } else if (firstItem && typeof firstItem.url === 'function') {
+      // url is a getter function
+      imageUrl = firstItem.url();
+    } else if (firstItem && typeof firstItem.url === 'string') {
+      imageUrl = firstItem.url;
+    } else {
+      imageUrl = String(firstItem);
+    }
+  } else if (output && typeof output === 'object') {
+    // Object with url property
+    if (typeof output.url === 'function') {
+      imageUrl = output.url();
+    } else {
+      imageUrl = output.url || output.toString();
+    }
+  } else {
+    throw new Error(`Unexpected output format: ${JSON.stringify(output)}`);
+  }
+  
+  console.log(`Downloading from: ${imageUrl}`);
+  
+  // Download the image
+  const response = await fetch(imageUrl);
+  if (!response.ok) {
+    throw new Error(`Failed to download image: ${response.status} ${response.statusText}`);
+  }
+  
+  const arrayBuffer = await response.arrayBuffer();
+  const imageData = Buffer.from(arrayBuffer);
+  
+  console.log(`Downloaded ${imageData.length} bytes for ${step.filename}`);
+  
+  await writeFile(outputPath, imageData);
   console.log(`Generated ${step.filename}...`);
 }
 
