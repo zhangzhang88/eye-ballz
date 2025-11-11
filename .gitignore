@@ -28,7 +28,7 @@ Thumbs.db
 *~
 
 # Build artifacts
-# dist/  # 允许 dist 目录被提交用于 Vercel 部署
+dist/
 build/
 *.log
 

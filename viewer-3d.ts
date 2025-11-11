@@ -40,7 +40,7 @@ let currentYIndex = 0;
 // Setup Three.js scene
 function setupScene() {
   const canvasEl = document.createElement('canvas');
-  canvasEl.classList.add('viewer-3d');
+  canvasEl.className.add('viewer-3d');
 
   // 使用容器的实际尺寸
   const width = viewerContainer.offsetWidth || 200;
@@ -103,8 +103,8 @@ async function preloadTextures() {
   for (let i = 0; i < allSteps.length; i += batchSize) {
     const batch = allSteps.slice(i, i + batchSize);
     await Promise.all(batch.map(async (step) => {
-      const photoPath = `/outputs/${PREFIX}/${step.filename}`;
-      const depthPath = `/outputs/${PREFIX}/depth/${step.filename}.depth.png`;
+      const photoPath = `./outputs/${PREFIX}/${step.filename}`;
+      const depthPath = `./outputs/${PREFIX}/depth/${step.filename}.depth.png`;
 
       return new Promise((resolve) => {
         // Load photo texture

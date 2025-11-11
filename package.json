@@ -6,9 +6,7 @@
     "generate": "node --env-file .env generate.ts",
     "depth": "node --env-file .env depth.ts",
     "preview": "vite --port 6767",
-    "upload": "node --env-file .env upload-server.ts",
-    "build": "vite build",
-    "build:vercel": "vite build --config vite.config.js"
+    "upload": "node --env-file .env upload-server.ts"
   },
   "keywords": [],
   "author": "Wes Bos (https://wesbos.com/)",
