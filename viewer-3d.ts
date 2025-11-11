@@ -40,7 +40,7 @@ let currentYIndex = 0;
 // Setup Three.js scene
 function setupScene() {
   const canvasEl = document.createElement('canvas');
-  canvasEl.className.add('viewer-3d');
+  canvasEl.classList.add('viewer-3d');
 
   // 使用容器的实际尺寸
   const width = viewerContainer.offsetWidth || 200;
