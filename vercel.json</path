@@ -1,0 +1,20 @@
+{
+  "routes": [
+    {
+      "src": "/viewer-3d.html",
+      "dest": "/viewer-3d.html"
+    },
+    {
+      "src": "/upload.html",
+      "dest": "/upload.html"
+    },
+    {
+      "src": "/preview.html", 
+      "dest": "/preview.html"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    }
+  ]
+}
