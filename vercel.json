@@ -1,31 +1,24 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "dist/**/*",
-      "use": "@vercel/static"
-    }
-  ],
   "routes": [
     {
       "src": "/viewer-3d.html",
-      "dest": "/dist/viewer-3d.html"
+      "dest": "/viewer-3d.html"
     },
     {
       "src": "/upload.html",
-      "dest": "/dist/upload.html"
+      "dest": "/upload.html"
     },
     {
       "src": "/preview.html",
-      "dest": "/dist/preview.html"
+      "dest": "/preview.html"
     },
     {
       "src": "/assets/(.*)",
-      "dest": "/dist/assets/$1"
+      "dest": "/assets/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/dist/$1"
+      "dest": "/$1"
     }
   ]
 }
